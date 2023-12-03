@@ -1,6 +1,6 @@
 mod day1;
 mod day2;
-// mod day3;
+mod day3;
 // mod day4;
 // mod day5;
 // mod day6;
@@ -22,6 +22,7 @@ fn main() {
     let days = vec![
         Day::new("Day1", day1::day1),
         Day::new("Day2", day2::day2),
+        Day::new("Day3", day3::day3),
         // other days...
     ];
 
