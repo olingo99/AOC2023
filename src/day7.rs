@@ -35,14 +35,33 @@ impl hand {
             'A' => 14,
             'K' => 13,
             'Q' => 12,
-            'J' => 11,
+            'J' => 0,
             'T' => 10,
-            _ => {x.to_digit(10).unwrap()-1}
+            _ => {x.to_digit(10).unwrap()}
         }).collect::<Vec<u32>>();
         let mut counts = HashMap::new();
+        let mut jokers = 0;
         for &c in a.iter() {
-            *counts.entry(c).or_insert(0) += 1;
+            if c == 0 {
+                jokers += 1;
+            }
+            else{
+                *counts.entry(c).or_insert(0) += 1;
+            }
+            // *counts.entry(c).or_insert(0) += 1;
+
         }
+        // dbg!(&counts, jokers);
+        let max_key = counts.iter().max_by_key(|(_, &v)| v).map(|(&k, _)| k);
+        if let Some(key) = max_key {
+            if let Some(count) = counts.get_mut(&key) {
+                *count += jokers;
+            }
+        }
+        if counts.is_empty() {
+            counts.insert(0, jokers);
+        }
+        // dbg!(&counts);
         let mut v = counts.values().map(|&n| n).collect::<Vec<u32>>();
         v.sort();
         
@@ -74,15 +93,6 @@ impl PartialOrd for hand{
 impl Ord for hand{
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         if self.order == other.order {
-            // if self.order == 0{
-            //     if self.cards.iter().max() > other.cards.iter().max() {
-            //         return std::cmp::Ordering::Greater;
-            //     }
-            //     if self.cards.iter().max() < other.cards.iter().max() {
-            //         return std::cmp::Ordering::Less;
-            //     }
-            // }
-
             for (a,b) in self.cards.iter().zip(other.cards.iter()) {
                 if a > b {
                     return std::cmp::Ordering::Greater;
@@ -106,12 +116,8 @@ impl fmt::Debug for hand {
 pub fn day7() -> input::Result<()> {
     let contents = input::load_day_file("day7.txt");
     let mut hands:Vec<hand> = contents.lines().map(|x| hand::new(x)).collect();
-    // for line in contents.lines() {
-    //     let h = hand::new(line);
-    //     dbg!(h);
-    // }
     hands.sort();
-    dbg!(&hands);
+    // dbg!(&hands);
     let tot = hands.iter().enumerate().fold(0, |acc, (index, x)| {
         acc + x.bid*(index as u32 + 1)
     });
