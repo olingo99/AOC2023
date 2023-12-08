@@ -3,7 +3,9 @@ use std::collections::HashMap;
 use lazy_static::lazy_static;
 use std::fmt;
 
-#[derive(Debug,PartialEq, Eq)]
+// #[derive(Debug,PartialEq, Eq)]
+#[derive(PartialEq, Eq)]
+
 struct hand {
     cards :Vec<u32>,
     bid: u32,
@@ -30,11 +32,11 @@ impl hand {
 
         let mut l = data.split_whitespace();
         let a  = l.next().unwrap().chars().map(|x| match x {
-            'A' => 12,
-            'K' => 11,
-            'Q' => 10,
-            'J' => 9,
-            'T' => 8,
+            'A' => 14,
+            'K' => 13,
+            'Q' => 12,
+            'J' => 11,
+            'T' => 10,
             _ => {x.to_digit(10).unwrap()-1}
         }).collect::<Vec<u32>>();
         let mut counts = HashMap::new();
@@ -95,11 +97,11 @@ impl Ord for hand{
     }
 }
 
-// impl fmt::Debug for hand {
-//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-//         write!(f, "{}",self.bid)
-//     }
-// }
+impl fmt::Debug for hand {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}",self.bid)
+    }
+}
 
 pub fn day7() -> input::Result<()> {
     let contents = input::load_day_file("day7.txt");
@@ -109,7 +111,7 @@ pub fn day7() -> input::Result<()> {
     //     dbg!(h);
     // }
     hands.sort();
-    // dbg!(&hands);
+    dbg!(&hands);
     let tot = hands.iter().enumerate().fold(0, |acc, (index, x)| {
         acc + x.bid*(index as u32 + 1)
     });
