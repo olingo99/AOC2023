@@ -9,6 +9,7 @@ mod day8;
 mod day9;
 mod day10;
 mod day11;
+mod day12;
 // mod day14;
 // mod day15;
 
@@ -31,6 +32,7 @@ fn main() {
         Day::new("Day9", day9::day9),
         Day::new("Day10", day10::day10),
         Day::new("Day11", day11::day11),
+        Day::new("Day12", day12::day12),
         // other days...
     ];
 
