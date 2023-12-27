@@ -1,22 +1,58 @@
 use crate::input;
 use std::collections::HashMap;
 
+
+// struct Box{
+//     id: u16,
+//     lenses: Vec<u16>,
+// }
+
+
 pub fn day15() -> input::Result<()> {
+    let mut boxes: Vec<Vec<String>> = vec![Vec::new(); 256];
     let contents = input::load_day_file("day15.txt");
-    let tot: u64 = contents
-    .split(',')
-    .map(|line| {
-        line.chars()
-            .map(|char| (char as u8) as u64)
-            .fold(0, |subtot, char_val| (char_val + subtot) * 17)
-    })
-    .fold(0, |tot, subtot| tot + subtot % 256);
+    'exte: for line in contents.split(','){
+        let mut split = line.split(|c| c == '=' || c == '-');
+        let label = split.next().unwrap();
+        
+        let lensBox:usize = getBoxId(label);
+        // dbg!(lensBox);
+        if line.contains('-'){
+            boxes[lensBox].retain(|lens| lens.split_whitespace().next().unwrap() != label);
+        }
+        else{
+            let labelWithFocal = label.to_string() + " " + split.next().unwrap();
+            for item in boxes[lensBox].iter_mut() {
+                if item.split_whitespace().next().unwrap() == label {
+                    *item = labelWithFocal.to_string();
+                    continue 'exte;
+                }
+            }
+            boxes[lensBox].push(labelWithFocal.to_string());
+        }
+    }
+    // boxes.retain(|lens| lens.len() >= 1);
+    // dbg!(boxes);
+    let mut tot:u64 = 0;
+    for (bo_index, bo) in boxes.iter().enumerate() {
+        if bo.len() >= 1 {
+            for (lens_index, lens) in bo.iter().enumerate() {
+                let sub = (bo_index as u64+1)*(lens_index as u64+1)*lens.split_whitespace().nth(1).unwrap().parse::<u64>().unwrap();
+                // dbg!(sub);
+                tot+= sub;
+            }
+        }
+    }
     dbg!(tot);
     Ok(())
 }
 
 
-
+fn getBoxId(label: &str) -> usize{
+    label.chars()
+            .map(|char| (char as u8) as usize)
+            .fold(0, |subtot, char_val| (char_val + subtot) * 17)%256
+}
 
 
 
