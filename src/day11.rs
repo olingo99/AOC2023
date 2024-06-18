@@ -6,11 +6,11 @@ pub fn day11() -> input::Result<()> {
     let contents = input::load_day_file("day11.txt");
     let mut grid : Vec<Vec<char>> = contents.lines().map(|l| l.chars().collect()).collect();
     // dbg!(&grid);
-    let mut indicesRow = Vec::new();
-    let mut indicesCol = Vec::new();
+    let mut indices_row = Vec::new();
+    let mut indices_col = Vec::new();
     for (index, line) in grid.iter().enumerate(){
         if line.iter().all(|c| c == &'.'){
-            indicesRow.push(index);
+            indices_row.push(index);
         }
     }
     let num_columns = grid[0].len();
@@ -27,7 +27,7 @@ pub fn day11() -> input::Result<()> {
             // Do something with cell
         }
         if col.iter().all(|c| c == &'.'){
-            indicesCol.push(j);
+            indices_col.push(j);
         }
     }
     // dbg!(&galaxies);
@@ -45,28 +45,28 @@ pub fn day11() -> input::Result<()> {
         let mut dist = (galaxy1.0 as i64 - galaxy2.0 as i64).abs() + (galaxy1.1 as i64- galaxy2.1 as i64).abs();
         if galaxy1.0>galaxy2.0{
             for index in galaxy2.0..galaxy1.0 {
-                if indicesRow.contains(&index){
+                if indices_row.contains(&index){
                     dist +=999999;
                 }
             }
         }
         else{
             for index in galaxy1.0..galaxy2.0 {
-                if indicesRow.contains(&index){
+                if indices_row.contains(&index){
                     dist +=999999;
                 }
             }
         }
         if galaxy1.1>galaxy2.1{
             for index in galaxy2.1..galaxy1.1 {
-                if indicesCol.contains(&index){
+                if indices_col.contains(&index){
                     dist +=999999;
                 }
             }
         }
         else{
             for index in galaxy1.1..galaxy2.1 {
-                if indicesCol.contains(&index){
+                if indices_col.contains(&index){
                     dist +=999999;
                 }
             }
@@ -76,8 +76,8 @@ pub fn day11() -> input::Result<()> {
         // dbg!(dist);
     }
 
-    // dbg!(indicesRow);
-    // dbg!(indicesCol);
+    // dbg!(indices_row);
+    // dbg!(indices_col);
     // dbg!(galaxies);
 
     dbg!(tot);

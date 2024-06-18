@@ -15,20 +15,20 @@ pub fn day15() -> input::Result<()> {
         let mut split = line.split(|c| c == '=' || c == '-');
         let label = split.next().unwrap();
         
-        let lensBox:usize = getBoxId(label);
-        // dbg!(lensBox);
+        let lens_box:usize = get_box_id(label);
+        // dbg!(lens_box);
         if line.contains('-'){
-            boxes[lensBox].retain(|lens| lens.split_whitespace().next().unwrap() != label);
+            boxes[lens_box].retain(|lens| lens.split_whitespace().next().unwrap() != label);
         }
         else{
-            let labelWithFocal = label.to_string() + " " + split.next().unwrap();
-            for item in boxes[lensBox].iter_mut() {
+            let label_with_focal = label.to_string() + " " + split.next().unwrap();
+            for item in boxes[lens_box].iter_mut() {
                 if item.split_whitespace().next().unwrap() == label {
-                    *item = labelWithFocal.to_string();
+                    *item = label_with_focal.to_string();
                     continue 'exte;
                 }
             }
-            boxes[lensBox].push(labelWithFocal.to_string());
+            boxes[lens_box].push(label_with_focal.to_string());
         }
     }
     // boxes.retain(|lens| lens.len() >= 1);
@@ -48,7 +48,7 @@ pub fn day15() -> input::Result<()> {
 }
 
 
-fn getBoxId(label: &str) -> usize{
+fn get_box_id(label: &str) -> usize{
     label.chars()
             .map(|char| (char as u8) as usize)
             .fold(0, |subtot, char_val| (char_val + subtot) * 17)%256
