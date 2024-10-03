@@ -78,13 +78,13 @@ fn parse_input(contents: &str) -> Vec<Matrix> {
 fn solve_part1(matrixes: &Vec<Matrix>) -> usize {
     let mut total = 0;
     for matrix in matrixes {
-        total += solve_matrix(&matrix, false);
-        // dbg!(total);
+        total += solve_matrix_part2(&matrix, false);
+        dbg!(total);
     }
     total
 }
 
-fn solve_matrix(matrix: &Matrix, rec:bool) -> usize {
+fn solve_matrix_part1(matrix: &Matrix, rec:bool) -> usize {
     let mut total = 0;
     let nb_rows = matrix.matrix.len();
     for index in 0..nb_rows{
@@ -108,8 +108,49 @@ fn solve_matrix(matrix: &Matrix, rec:bool) -> usize {
     }
     if !rec
     {
-        total += solve_matrix(&matrix.transpose(), true)/100;
+        total += solve_matrix_part1(&matrix.transpose(), true)/100;
 
     }
     total
+}
+
+fn solve_matrix_part2(matrix: &Matrix, rec:bool) -> usize { //can be used for part 1 with n,bdiff == 1
+    let mut total = 0;
+    let nb_rows = matrix.matrix.len();
+    for index in 0..nb_rows{
+        let mut nb_diff = 0;
+        for i in 0..index+1 {
+            let target = index*2+1-i;
+            if i >= nb_rows || target >= nb_rows {
+                continue;
+            }
+            nb_diff += cacl_diff(&matrix.matrix[i],&matrix.matrix[target]);
+            if nb_diff > 1
+            {
+                break;
+            }
+        }
+        if nb_diff==1 && index != nb_rows-1
+        {
+            // dbg!(index,rec,1*(index+1));
+            total += 100*(index+1);
+        }
+    }
+    if !rec
+    {
+        total += solve_matrix_part2(&matrix.transpose(), true)/100;
+
+    }
+    total
+}
+
+
+fn cacl_diff(line1: &Vec<char>, line2: &Vec<char>) -> usize {
+    let mut diff = 0;
+    for i in 0..line1.len() {
+        if line1[i] != line2[i] {
+            diff += 1;
+        }
+    }
+    diff
 }
