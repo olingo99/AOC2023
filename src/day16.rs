@@ -7,6 +7,8 @@ use matrix::Matrix;
 
 use once_cell::sync::Lazy;
 
+use rayon::prelude::*;
+
 enum BeamAction {
     Add(Beam),
     Remove,
@@ -43,7 +45,7 @@ fn print_dirmir() {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Beam {
     direction: char,
     x: i32,
@@ -82,8 +84,8 @@ impl Beam {
         //dbg!(self.x, self.y);
 
         let tile: char = matrix.matrix[self.y as usize][self.x as usize];
-        let mut matrix2 = matrix.clone();
-        matrix2.matrix[self.y as usize][self.x as usize] = self.direction;
+        // let mut matrix2 = matrix.clone();
+        // matrix2.matrix[self.y as usize][self.x as usize] = self.direction;
         //dbg!(matrix2);
 
         if tile == '/' || tile == '\\' {
@@ -129,7 +131,7 @@ pub fn day16() -> input::Result<()> {
     //dbg!(&matrix);
     print_dirmir();
 
-    solve_part2(matrix);
+    solve_part2_parr(matrix);
 
     Ok(())
 }
@@ -218,4 +220,36 @@ fn generate_starting_beam(matrix: &Matrix) -> Vec<Beam>{
     // dbg!(&starterBeams.len());
 
     return starterBeams;
+}
+
+
+fn solve_part2_parr(matrix: Matrix) {
+    let starter_beams = generate_starting_beam(&matrix);
+
+    let energylevels: Vec<u32> = starter_beams
+        .par_iter()
+        .map(|beam| {
+            let mut beam_vec: Vec<Beam> = Vec::new();
+            let mut energized_cells: HashSet<(i32, i32)> = HashSet::new();
+            let mut walked: HashSet<(i32, i32, char)> = HashSet::new();
+            beam_vec.push(beam.clone());
+            while !beam_vec.is_empty() {
+                let mut new_beams: Vec<Beam> = Vec::new();
+                beam_vec.retain_mut(|beam| match beam.step(&matrix, &mut energized_cells, &mut walked) {
+                    BeamAction::Add(new_beam) => {
+                        new_beams.push(new_beam);
+                        true
+                    }
+                    BeamAction::Remove => false,
+                    BeamAction::None => true,
+                    BeamAction::Error => true,
+                });
+                beam_vec.extend(new_beams);
+            }
+
+            energized_cells.len() as u32
+        })
+        .collect();
+
+    dbg!(energylevels.iter().max());
 }
