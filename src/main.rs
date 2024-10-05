@@ -11,10 +11,13 @@
 // mod day11;
 // mod day12;
 // mod day13;
-mod day14;
+// mod day14;
 // mod day15;
 // mod day18;
-mod day16;
+// mod day16;
+mod day17;
+mod day19;
+
 
 mod input;
 mod matrix;
@@ -41,7 +44,11 @@ fn main() {
         // Day::new("Day13", day13::day13),
 
         // Day::new("Day14", day14::day14),
-        Day::new("Day16", day16::day16),
+        // Day::new("Day16", day16::day16),
+        // Day::new("Day17", day17::day17),
+        Day::new("Day19", day19::day19),
+
+
         // Day::new("Day15", day15::day15),
         // Day::new("Day18", day18::day18),
         // other days...

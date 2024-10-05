@@ -2,19 +2,35 @@ use std::fs;
 use std::path::PathBuf;
 use std::time::Instant;
 
+pub trait FromChar {
+    fn from_char(c: char) -> Self;
+}
+
+impl FromChar for i32 {
+    fn from_char(c: char) -> Self {
+        c.to_digit(10).unwrap() as i32
+    }
+}
+
+impl FromChar for char {
+    fn from_char(c: char) -> Self {
+        c
+    }
+}
+
 #[derive(Clone)]
-pub struct Matrix
-{
-    pub matrix: Vec<Vec<char>>,
+pub struct Matrix<T> {
+    pub matrix: Vec<Vec<T>>,
     pub rows: usize,
     pub cols: usize,
 }
 
-impl Matrix{
-    pub fn parse_input(contents: &str) -> Matrix {
-        let mut matrix: Vec<Vec<char>> = Vec::new();
+impl<T: FromChar> Matrix<T> {
+    pub fn parse_input(contents: &str) -> Matrix<T> {
+        let mut matrix: Vec<Vec<T>> = Vec::new();
         for line in contents.lines() {
-            matrix.push(line.chars().collect());
+            let row: Vec<T> = line.chars().map(T::from_char).collect();
+            matrix.push(row);
         }
         let rows = matrix.len();
         let cols = matrix[0].len();
@@ -24,12 +40,12 @@ impl Matrix{
 
 use std::fmt;
 
-impl fmt::Debug for Matrix {
+impl<T: fmt::Debug> fmt::Debug for Matrix<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f)?;
         for row in &self.matrix {
-            for &item in row {
-                write!(f, "{} ", item)?;
+            for item in row {
+                write!(f, "{:?} ", item)?; // Use {:?} for Debug formatting
             }
             writeln!(f)?;
         }
@@ -37,12 +53,12 @@ impl fmt::Debug for Matrix {
     }
 }
 
-impl fmt::Display for Matrix {
+impl<T: fmt::Display> fmt::Display for Matrix<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f)?;
         for row in &self.matrix {
-            for &item in row {
-                write!(f, "{} ", item)?;
+            for item in row {
+                write!(f, "{} ", item)?; // Use {} for Display formatting
             }
             writeln!(f)?;
         }
