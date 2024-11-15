@@ -1,82 +1,33 @@
-import re
-ll = [x for x in open('data/day19.txt').read().strip().split('\n\n')]
-workflow, parts = ll
+# Problem 3 - tree collisions
 
-def ints(s):
-	return list(map(int, re.findall(r'\d+', s)))
+# Part 1
+with open('test.txt', 'r') as fd:
+    lines = [line.rstrip() for line in fd]
 
-parts = [ints(l) for l in parts.split("\n")]
-workflow = {l.split("{")[0]: l.split("{")[1][:-1] for l in workflow.split("\n")}
+NumberOfChars = len(lines[0])
+Position = 0
+Speed = 3 # Three right, one down per move - the down part is done by the for loop
 
-def eval2(part, work):
-	w = workflow[work]
-	x, m, a, s = part
-	for it in w.split(","):
-		if it == "R":
-			return False
-		if it == "A":
-			return True
-		if ":" not in it:
-			return eval2(part, it)
-		cond = it.split(":")[0]
-		if eval(cond):
-			if it.split(":")[1] == "R":
-				return False
-			if it.split(":")[1] == "A":
-				return True
-			return eval2(part, it.split(":")[1])
-	raise Exception(w)
+NumberOfTrees = 0
+for line in lines:
+    if line[Position%NumberOfChars] == "#":
+        NumberOfTrees = NumberOfTrees + 1
+    Position = Position + Speed
 
-p1 = 0
+print("Part 1: The number of tree collisions is: " + str(NumberOfTrees))
 
-for part in parts:
-	if eval2(part, 'in'):
-		p1 += sum(part)
-print(p1)
+# Part 2
+Speed = [[1,1], [3,1], [5,1], [7,1], [1,2]]
+Multiplied = 1
+for velocity in Speed:
+    Position = 0
+    NumberOfTrees = 0
+    lines = lines[0::velocity[1]] # Select the amount of lines needed.
+    for line in lines:
+        if line[Position % NumberOfChars] == "#":
+            NumberOfTrees = NumberOfTrees + 1
+        Position = Position + velocity[0]
+    Multiplied = Multiplied * NumberOfTrees
+    print("Part 2: With a speed of " + str(velocity) + ", you encounter " + str(NumberOfTrees) + " trees.")
 
-
-def both(ch, gt, val, ranges):
-	ch = 'xmas'.index(ch)
-	ranges2 = []
-	for rng in ranges:
-		rng = list(rng)
-		lo, hi = rng[ch]
-		if gt:
-			lo = max(lo, val + 1)
-		else:
-			hi = min(hi, val - 1)
-		if lo > hi:
-			continue
-		rng[ch] = (lo, hi)
-		ranges2.append(tuple(rng))
-	return ranges2
-
-
-def acceptance_ranges_outer(work):
-	return acceptance_ranges_inner(workflow[work].split(","))
-
-def acceptance_ranges_inner(w):
-	it = w[0]
-	if it == "R":
-		return []
-	if it == "A":
-		return [((1, 4000), (1, 4000), (1, 4000), (1, 4000))]
-	if ":" not in it:
-		return acceptance_ranges_outer(it)
-	cond = it.split(":")[0]
-	gt = ">" in cond
-	ch = cond[0]
-	val = int(cond[2:])
-	val_inverted = val + 1 if gt else val - 1
-	if_cond_is_true = both(ch, gt, val, acceptance_ranges_inner([it.split(":")[1]]))
-	if_cond_is_false = both(ch, not gt, val_inverted, acceptance_ranges_inner(w[1:]))
-	return if_cond_is_true + if_cond_is_false
-
-p2 = 0
-for rng in acceptance_ranges_outer('in'):
-	v = 1
-	print(rng)
-	for lo, hi in rng:
-		v *= hi - lo + 1
-	p2 += v
-print(p2)
+print("Part 2: Multiplied together, the amount of trees hit results in: " + str(Multiplied))
